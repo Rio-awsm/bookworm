@@ -22,6 +22,7 @@ import Link from "next/link";
 import { FIELD_NAMES, FIELD_TYPES } from "@/constants";
 import { Input } from "./ui/input";
 import FileUpload from "./FileUpload";
+import { Button } from "./ui/button";
 
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
@@ -96,6 +97,9 @@ const AuthForm = <T extends FieldValues>({
               )}
             />
           ))}
+           <Button type="submit" className="form-btn">
+            {isSignIn ? "Sign In" : "Sign Up"}
+          </Button>
         </form>
       </Form>
       <p className="text-center text-base font-medium">
