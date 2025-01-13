@@ -6,6 +6,7 @@ import {
   FieldValues,
   Path,
   SubmitErrorHandler,
+  SubmitHandler,
   useForm,
   UseFormReturn,
 } from "react-hook-form";
@@ -23,6 +24,8 @@ import { FIELD_NAMES, FIELD_TYPES } from "@/constants";
 import { Input } from "./ui/input";
 import FileUpload from "./FileUpload";
 import { Button } from "./ui/button";
+import { toast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
@@ -39,12 +42,33 @@ const AuthForm = <T extends FieldValues>({
 }: Props<T>) => {
   const isSignIn = type === "SIGN_IN";
 
+  const router = useRouter();
+
   const form: UseFormReturn<T> = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultValues as DefaultValues<T>,
   });
 
-  const handleSubmit: SubmitErrorHandler<T> = async (data) => {};
+  const handleSubmit: SubmitHandler<T> = async (data) => {
+    const result = await onSubmit(data);
+
+    if (result.success) {
+      toast({
+        title: "Success",
+        description: isSignIn
+          ? "You have successfully signed in."
+          : "You have successfully signed up.",
+      });
+
+      router.push("/");
+    } else {
+      toast({
+        title: `Error ${isSignIn ? "signing in" : "signing up"}`,
+        description: result.error ?? "An error occurred.",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-white">
