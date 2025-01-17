@@ -11,3 +11,25 @@ const qstashClient = new QStashClient({
     token: config.env.upstash.qstashToken,
   });
   
+  export const sendEmail = async ({
+    email,
+    subject,
+    message,
+  }: {
+    email: string;
+    subject: string;
+    message: string;
+  }) => {
+    await qstashClient.publishJSON({
+      api: {
+        name: "email",
+        provider: resend({ token: config.env.resendToken }),
+      },
+      body: {
+        from: "bookworm <sahasupriya108@gmail.com>",
+        to: [email],
+        subject,
+        html: message,
+      },
+    });
+  };
